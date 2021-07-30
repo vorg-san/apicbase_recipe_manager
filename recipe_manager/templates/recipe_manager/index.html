@@ -1,13 +1,50 @@
-<html>
-	<head>
-		
-	</head>
-	<body>
+{% extends "recipe_manager/base_generic.html" %}
+
+{% block content %}
+<h3 align="center">Recipe Manager</h3>
+
+<div class="row">
+	<div class="col-1 offset-1">
 		<h5>Recipes</h5>
+	</div>
+	<div class="col-1">
+		<button class="btn btn-primary">Add</button>
+	</div>
+</div>
+
+<div class="row">
+	{% if recipes %}
 		<ul>
 			{% for recipe in recipes %}
-			<li>{{recipe}}</li>
+				<li>{{recipe}}</li>
 			{% endfor %}
 		</ul>
-	</body>
-</html>
+	{% else %}
+		No recipes created yet.
+	{% endif %}
+</div>
+
+<div class="row">
+	<div class="col-1 offset-1">
+		<h5>Ingredients</h5>
+	</div>
+	<div class="col-1">
+		<a class="btn btn-primary" href="{% url 'recipe_manager:edit ingredient' ingredient_id=0 %}">Add</a>
+	</div>
+</div>
+
+<div class="row">
+	{% if ingredients %}
+		{% for ingredient in ingredients %}
+			<div class="card" style="width: 10rem;">
+				<!--img src="..." class="card-img-top" /-->
+				<div class="card-body">
+					<p class="card-text">{{ingredient}}</p>
+				</div>
+			</div>
+		{% endfor %}
+	{% else %}
+		No ingredients created yet.
+	{% endif %}
+</div>
+{% endblock %}

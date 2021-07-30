@@ -1,0 +1,17 @@
+{% extends "recipe_manager/base_generic.html" %}
+
+{% block content %}
+<h3 align="center">{% if ingredient.id %}Editing {{ingredient.name}} {% else %} New Ingredient {% endif %}</h3>
+
+<div class="row">
+	<div class="col-6 offset-1">
+		<form action="" method="post">
+			{% csrf_token %}
+			<table>
+			{{ form.as_table }}
+			</table>
+			<input class="btn btn-primary" type="submit" value="Save">
+		</form>
+	</div>
+</div>  
+{% endblock %}
