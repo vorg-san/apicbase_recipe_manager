@@ -1,24 +1,27 @@
 from django.shortcuts import render, get_object_or_404
 from django.core import serializers
 from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render
 from .models import Recipe, RecipeIngredient, Ingredient, QuantityUnit, CurrencyUnit
 
-def recipes(request):
-	data = serializers.serialize('json', Recipe.objects.all())
+def db_to_json(query):
+	data = serializers.serialize('json', query)
 	return HttpResponse(data, content_type='application/json')
+
+def recipes(request):
+	context = {
+		'recipes': Recipe.objects.all(),
+	}
+	return render(request, 'recipe_manager/index.html', context)
 
 def ingredients(request):
-	data = serializers.serialize('json', Ingredient.objects.all())
-	return HttpResponse(data, content_type='application/json')
+	return db_to_json(Ingredient.objects.all())
 
 def recipe_details(request):
-	data = serializers.serialize('json', RecipeIngredient.objects.all().select_related('ingredient'))
-	return HttpResponse(data, content_type='application/json')
+	return db_to_json(RecipeIngredient.objects.all().select_related('ingredient'))
 
 def quantity_unit(request):
-	data = serializers.serialize('json', QuantityUnit.objects.all())
-	return HttpResponse(data, content_type='application/json')
+	return db_to_json(QuantityUnit.objects.all().order_by('num_order'))
 
 def currency_unit(request):
-	data = serializers.serialize('json', CurrencyUnit.objects.all())
-	return HttpResponse(data, content_type='application/json')
+	return db_to_json(CurrencyUnit.objects.all().order_by('num_order'))

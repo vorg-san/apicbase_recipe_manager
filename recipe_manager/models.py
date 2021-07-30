@@ -3,12 +3,14 @@ from django.utils import timezone
 
 class QuantityUnit(models.Model):
 	description = models.CharField(max_length=100)
+	num_order = models.IntegerField()
 
 	def __str__(self):
 		return self.description
 
 class CurrencyUnit(models.Model):
 	description = models.CharField(max_length=100)
+	num_order = models.IntegerField()
 
 	def __str__(self):
 		return self.description
