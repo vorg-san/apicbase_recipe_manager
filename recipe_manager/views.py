@@ -59,7 +59,11 @@ def remove_ingredient(request, ingredient_id):
 def remove_recipe(request, recipe_id):
 	recipe = get_object_or_404(models.Recipe, pk=recipe_id)
 	recipe.delete()
-	return HttpResponseRedirect(reverse('recipe_manager:home') )
+	return HttpResponseRedirect(reverse('recipe_manager:home'))
+
+def remove_recipe_ingredient(request, recipe_id, ingredient_id):
+	models.RecipeList.objects.filter(recipe=recipe_id, ingredient=ingredient_id).delete()
+	return HttpResponseRedirect(reverse('recipe_manager:edit recipe', kwargs={'recipe_id':recipe_id}))
 
 def edit_recipe(request, recipe_id):
 	recipe = models.Recipe()
