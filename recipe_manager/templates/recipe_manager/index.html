@@ -40,7 +40,8 @@
 				<!--img src="..." class="card-img-top" /-->
 				<div class="card-body">
 					<p class="card-text">
-						<a href="{% url 'recipe_manager:edit ingredient' ingredient_id=ingredient.id %}">{{ingredient.name}}</a> 
+						{{ingredient.name}}
+						<a href="{% url 'recipe_manager:edit ingredient' ingredient_id=ingredient.id %}"><i class="bi bi-pencil"></i></a> 						
 					</p>
 				</div>
 			</div>

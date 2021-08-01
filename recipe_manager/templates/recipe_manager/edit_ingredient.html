@@ -10,9 +10,12 @@
 			<table>
 			{{ form.as_table }}
 			</table>
-			<input class="btn btn-primary" type="submit" value="Save">
 			<a class="btn btn-primary" href="{% url 'recipe_manager:home' %}">Back</a>
+			<input class="btn btn-primary" type="submit" value="Save">
 		</form>
+		{% if ingredient.id %}
+			<a class="btn btn-danger" href="{% url 'recipe_manager:remove ingredient' ingredient_id=ingredient.id %}"><i class="bi bi-eraser"></i> Remove</a>
+		{% endif %}
 	</div>
 </div>  
 

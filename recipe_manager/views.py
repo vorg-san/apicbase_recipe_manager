@@ -51,6 +51,11 @@ def edit_ingredient(request, ingredient_id):
 
 	return render(request, 'recipe_manager/edit_ingredient.html', context)
 
+def remove_ingredient(request, ingredient_id):
+	ingredient = get_object_or_404(models.Ingredient, pk=ingredient_id)
+	ingredient.delete()
+	return HttpResponseRedirect(reverse('recipe_manager:home') )
+
 def edit_recipe(request, recipe_id):
 	recipe = models.Recipe()
 	initial_name_form = {}
