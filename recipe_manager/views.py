@@ -56,6 +56,11 @@ def remove_ingredient(request, ingredient_id):
 	ingredient.delete()
 	return HttpResponseRedirect(reverse('recipe_manager:home') )
 
+def remove_recipe(request, recipe_id):
+	recipe = get_object_or_404(models.Recipe, pk=recipe_id)
+	recipe.delete()
+	return HttpResponseRedirect(reverse('recipe_manager:home') )
+
 def edit_recipe(request, recipe_id):
 	recipe = models.Recipe()
 	initial_name_form = {}

@@ -14,11 +14,16 @@
 
 <div class="row">
 	{% if recipes %}
-		<ul>
-			{% for recipe in recipes %}
-				<li>{{recipe}}</li>
-			{% endfor %}
-		</ul>
+		{% for recipe in recipes %}
+			<div class="card" style="width: 10rem;">
+				<div class="card-body">
+					<p class="card-text">
+						{{recipe.name}}
+						<a href="{% url 'recipe_manager:edit recipe' recipe_id=recipe.id %}"><i class="bi bi-pencil"></i></a> 						
+					</p>
+				</div>
+			</div>
+		{% endfor %}
 	{% else %}
 		No recipes created yet.
 	{% endif %}
