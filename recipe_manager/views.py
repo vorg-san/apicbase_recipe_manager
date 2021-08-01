@@ -67,10 +67,12 @@ def remove_recipe_ingredient(request, recipe_id, ingredient_id):
 
 def edit_recipe(request, recipe_id):
 	recipe = models.Recipe()
+	recipe_list = models.RecipeList()
 	initial_name_form = {}
 
 	if recipe_id > 0:
 		recipe = get_object_or_404(models.Recipe, pk=recipe_id)
+		recipe_list = models.RecipeList.objects.filter(recipe=recipe_id)
 		initial_name_form = {
 			'name': recipe.name,
 		}
@@ -90,15 +92,15 @@ def edit_recipe(request, recipe_id):
 			form_ingredient = forms.RecipeIngredientForm(request.POST)
 	
 			if form_ingredient.is_valid():
-					recipe_list = models.RecipeList()
-					recipe_list.recipe = recipe
-					recipe_list.quantity = form_ingredient.cleaned_data['quantity']
-					recipe_list.ingredient = get_object_or_404(models.Ingredient, pk=form_ingredient.cleaned_data['ingredient'].id)
-					recipe_list.save()
-					recipe.ingredients.add(form_ingredient.cleaned_data['ingredient'])
-					# recipe.save()				
+				ingredient_id = form_ingredient.cleaned_data['ingredient'].id
 
-			# return HttpResponseRedirect(reverse('recipe_manager:home') )
+				if not recipe_list.filter(ingredient=ingredient_id): # can't add if ingredient is already in the recipe
+					recipe_list_new = models.RecipeList()
+					recipe_list_new.recipe = recipe
+					recipe_list_new.quantity = form_ingredient.cleaned_data['quantity']
+					recipe_list_new.ingredient = get_object_or_404(models.Ingredient, pk=ingredient_id)
+					recipe_list_new.save()
+					recipe.ingredients.add(form_ingredient.cleaned_data['ingredient'])
 	else:
 		form_name = forms.RecipeNameForm(initial=initial_name_form)
 		form_ingredient = forms.RecipeIngredientForm()
@@ -107,6 +109,7 @@ def edit_recipe(request, recipe_id):
 	'form_name': form_name,
 	'form_ingredient': form_ingredient,
 	'recipe': recipe,
+	'recipe_list': recipe_list
 	}
 
 	return render(request, 'recipe_manager/edit_recipe.html', context)
