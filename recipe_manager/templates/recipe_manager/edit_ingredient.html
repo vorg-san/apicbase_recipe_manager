@@ -1,7 +1,7 @@
 {% extends "recipe_manager/base_generic.html" %}
 
 {% block content %}
-<h3 align="center">{% if ingredient.id %}Editing {{ingredient.name}} {% else %} New Ingredient {% endif %}</h3>
+<h3 align="center">{% if ingredient.id %}Editing Ingredient '{{ingredient.name}}' {% else %} New Ingredient {% endif %}</h3>
 
 <div class="row">
 	<div class="col-6 offset-1">
@@ -11,7 +11,13 @@
 			{{ form.as_table }}
 			</table>
 			<input class="btn btn-primary" type="submit" value="Save">
+			<a class="btn btn-primary" href="{% url 'recipe_manager:home' %}">Back</a>
 		</form>
 	</div>
 </div>  
+
+
+
+1234567890
+1234567890
 {% endblock %}

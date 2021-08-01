@@ -17,23 +17,31 @@ class CurrencyUnit(models.Model):
 
 class Ingredient(models.Model):
 	name = models.CharField(max_length=300)
+	article = models.CharField(max_length=300)
 	quantity = models.FloatField()
 	quantityUnit = models.ForeignKey(QuantityUnit, on_delete=models.CASCADE)
 	currency = models.FloatField()
 	currencyUnit = models.ForeignKey(CurrencyUnit, on_delete=models.CASCADE)
 	updated = models.DateTimeField(default=timezone.now, blank=True)
 
+	class Meta:
+		ordering = ['name']
+
 	def __str__(self):
 		return self.name
 
 class Recipe(models.Model):
 	name = models.CharField(max_length=800)
+	ingredients = models.ManyToManyField(Ingredient, through='RecipeList')
 	updated = models.DateTimeField(default=timezone.now, blank=True)
+
+	class Meta:
+		ordering = ['name']
 
 	def __str__(self):
 		return self.name
 
-class RecipeIngredient(models.Model):
+class RecipeList(models.Model):
 	recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
 	ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
-	ammount = models.FloatField()
+	quantity = models.FloatField()

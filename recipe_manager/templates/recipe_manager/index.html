@@ -8,7 +8,7 @@
 		<h5>Recipes</h5>
 	</div>
 	<div class="col-1">
-		<button class="btn btn-primary">Add</button>
+		<a class="btn btn-primary" href="{% url 'recipe_manager:edit recipe' recipe_id=0 %}">Add</a>
 	</div>
 </div>
 
@@ -39,7 +39,9 @@
 			<div class="card" style="width: 10rem;">
 				<!--img src="..." class="card-img-top" /-->
 				<div class="card-body">
-					<p class="card-text">{{ingredient}}</p>
+					<p class="card-text">
+						<a href="{% url 'recipe_manager:edit ingredient' ingredient_id=ingredient.id %}">{{ingredient.name}}</a> 
+					</p>
 				</div>
 			</div>
 		{% endfor %}

@@ -1,0 +1,61 @@
+{% extends "recipe_manager/base_generic.html" %}
+
+{% block content %}
+
+<style>
+	input[type="number"] {
+		width: 80px;
+	}
+</style>
+
+<h3 align="center">{% if recipe.id %}Editing Recipe '{{recipe.name}}' {% else %} New Recipe {% endif %}</h3>
+
+<div class="row">
+	<div class="col-4 offset-1">
+		
+		<form action="" method="post">
+			{% csrf_token %}
+			<input type="hidden" name="objective" value="saveName" />
+			<table>
+				<tr>
+					<td>Name:</td>
+					<td>{{form_name.name}}</td>
+					<td><button type="submit" class="btn btn-primary">Save Name</button></td>
+				</tr>
+			</table>
+		</form>
+
+		<p></p>
+		<hr/>
+
+		{% if recipe.id %}
+		<form action="" method="post">
+			{% csrf_token %}
+			<input type="hidden" name="objective" value="addIngredient" />
+			{{form_ingredient.ingredient}}: {{form_ingredient.quantity}} <span id="unit">grams</span> <button type="submit" class="btn btn-primary">Add</button>
+		</form>
+
+		<fieldset>
+			<legend>Ingredient list</legend>
+
+			<ul>
+				{% for ingredient in recipe.ingredients.all %}
+				<li>{{ingredient.name}} {{ingredient.quantity}}</li>
+				{% endfor %}
+			</ul>
+		</fieldset>
+		{% endif %}
+	</div>
+</div>  
+
+<a class="btn btn-primary" href="{% url 'recipe_manager:home' %}">Back</a>
+
+<script>
+	$('select#id_ingredient').change((e) => {
+		console.log($('select#id_ingredient').val())
+	})	
+</script>
+1234567890
+1234567890
+
+{% endblock %}
