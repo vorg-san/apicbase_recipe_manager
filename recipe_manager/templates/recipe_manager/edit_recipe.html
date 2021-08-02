@@ -6,12 +6,19 @@
 	input[type="number"] {
 		width: 80px;
 	}
+	td,th {
+		text-align: center;
+	}
+	table {
+		border-spacing: 10px;
+		border-collapse: separate;
+	}
 </style>
 
 <h3 align="center">{% if recipe.id %}Editing Recipe '{{recipe.name}}' {% else %} New Recipe {% endif %}</h3>
 
 <div class="row">
-	<div class="col-4 offset-1">
+	<div class="col-8 offset-1">
 		
 		<form action="" method="post">
 			{% csrf_token %}
@@ -20,7 +27,7 @@
 				<tr>
 					<td>Name:</td>
 					<td>{{form_name.name}}</td>
-					<td><button type="submit" class="btn btn-primary">Save Name</button></td>
+					<td><button type="submit" class="btn btn-primary">Save</button></td>
 				</tr>
 			</table>
 		</form>
@@ -29,23 +36,38 @@
 		<hr/>
 
 		{% if recipe.id %}
-		<form action="" method="post">
-			{% csrf_token %}
-			<input type="hidden" name="objective" value="addIngredient" />
-			{{form_ingredient.ingredient}}: {{form_ingredient.quantity}} <span id="unit">grams</span> <button type="submit" class="btn btn-primary">Add</button>
-		</form>
-
 		<fieldset>
 			<legend>Ingredient list</legend>
+	
+			<form action="" method="post">
+				{% csrf_token %}
+				<input type="hidden" name="objective" value="addIngredient" />
+				{{form_ingredient.ingredient}}: {{form_ingredient.quantity}} <span id="unit">grams</span> <button type="submit" class="btn btn-primary">Add</button>
+			</form>
 
-			<ul>
+			<table>
+				<tr>
+					<th>Ingredient</th>
+					<th>Ammount</th>
+					<th>Price</th>
+					<th>Cost</th>
+					<th>Remove</th>
+				</tr>
 				{% for ingredient_list in recipe_list.all %}
-					<li>{{ingredient_list.ingredient.name}} {{ingredient_list.quantity}}
-						<a href="{% url 'recipe_manager:remove ingredient from recipe' recipe_id=recipe.id ingredient_id=ingredient_list.ingredient.id %}"><i class="bi bi-eraser"></i></a>
-					</li>
+					<tr>
+						<td>{{ingredient_list.ingredient.name}}</td>
+						<td>{{ingredient_list.quantity|floatformat:"-2"}} {{ingredient_list.ingredient.quantityUnit}}</td>
+						<td>{{ingredient_list.ingredient.currency|floatformat:"-2"}} {{ingredient_list.ingredient.currencyUnit}} per {{ingredient_list.ingredient.quantity|floatformat:"-2"}} {{ingredient_list.ingredient.quantityUnit}}</td>
+						<td>{{price_list|get_item:ingredient_list.ingredient.id|floatformat:"-2"}} {{ingredient_list.ingredient.currencyUnit}}</td>
+						<td><a href="{% url 'recipe_manager:remove ingredient from recipe' recipe_id=recipe.id ingredient_id=ingredient_list.ingredient.id %}"><i class="bi bi-eraser"></i></a></td>
+					</tr>
 				{% endfor %}
-			</ul>
+			</table>
 		</fieldset>
+
+		<b>Total recipe cost: {{price_list|sum_dict_items|floatformat:"-2"}}</b>
+		<br>
+		<br>
 		{% endif %}
 	</div>
 </div>  

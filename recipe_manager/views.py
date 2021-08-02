@@ -65,6 +65,15 @@ def remove_recipe_ingredient(request, recipe_id, ingredient_id):
 	models.RecipeList.objects.filter(recipe=recipe_id, ingredient=ingredient_id).delete()
 	return HttpResponseRedirect(reverse('recipe_manager:edit recipe', kwargs={'recipe_id':recipe_id}))
 
+def get_recipe_and_price_lists(recipe_id):
+	recipe_list = models.RecipeList.objects.filter(recipe=recipe_id)
+	price_list = {}
+	
+	for ingredient_list in recipe_list.all():
+		price_list[ingredient_list.ingredient.id] = ingredient_list.quantity * ingredient_list.ingredient.currency / ingredient_list.ingredient.quantity
+
+	return [recipe_list, price_list]
+
 def edit_recipe(request, recipe_id):
 	recipe = models.Recipe()
 	recipe_list = models.RecipeList()
@@ -72,21 +81,22 @@ def edit_recipe(request, recipe_id):
 
 	if recipe_id > 0:
 		recipe = get_object_or_404(models.Recipe, pk=recipe_id)
-		recipe_list = models.RecipeList.objects.filter(recipe=recipe_id)
 		initial_name_form = {
 			'name': recipe.name,
 		}
-
+		recipe_list, price_list = get_recipe_and_price_lists(recipe_id)
+		
+		
 	if request.method == 'POST':
 		if request.POST['objective'] == 'saveName':
 			form_ingredient = forms.RecipeIngredientForm()
 			form_name = forms.RecipeNameForm(request.POST)
 	
 			if form_name.is_valid():
-					recipe.name = form_name.cleaned_data['name']
-					recipe.save()			
-					
-					return HttpResponseRedirect(reverse(f'recipe_manager:edit recipe', kwargs={'recipe_id':recipe.id}))
+				recipe.name = form_name.cleaned_data['name']
+				recipe.save()			
+				
+				return HttpResponseRedirect(reverse(f'recipe_manager:edit recipe', kwargs={'recipe_id':recipe.id}))
 		else:
 			form_name = forms.RecipeNameForm(initial=initial_name_form)
 			form_ingredient = forms.RecipeIngredientForm(request.POST)
@@ -101,21 +111,37 @@ def edit_recipe(request, recipe_id):
 					recipe_list_new.ingredient = get_object_or_404(models.Ingredient, pk=ingredient_id)
 					recipe_list_new.save()
 					recipe.ingredients.add(form_ingredient.cleaned_data['ingredient'])
+					recipe_list, price_list = get_recipe_and_price_lists(recipe_id)
 	else:
 		form_name = forms.RecipeNameForm(initial=initial_name_form)
 		form_ingredient = forms.RecipeIngredientForm()
-
+	
 	context = {
-	'form_name': form_name,
-	'form_ingredient': form_ingredient,
-	'recipe': recipe,
-	'recipe_list': recipe_list
+		'form_name': form_name,
+		'form_ingredient': form_ingredient,
+		'recipe': recipe,
+		'recipe_list': recipe_list,
+		'price_list': price_list
 	}
 
 	return render(request, 'recipe_manager/edit_recipe.html', context)
 
+# Filter
 
-# BELOW WOULD BE USED ONLY FOR INTEGRATION WITH PURE JS FRAMEWORK LIKE REACT
+from django.template.defaulttags import register
+
+@register.filter
+def get_item(dictionary, key):
+	return dictionary.get(key)
+
+@register.filter
+def sum_dict_items(dictionary):
+	total = 0
+	for key, value in dictionary.items():
+		total += dictionary.get(key)
+	return total
+
+# Below would be used only for integration with a pure js framework like React
 
 def db_to_json(query):
 	data = serializers.serialize('json', query)
