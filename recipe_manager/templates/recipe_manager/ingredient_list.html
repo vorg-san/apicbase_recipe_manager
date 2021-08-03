@@ -1,0 +1,64 @@
+<div class="row">
+	<div class="col-8">
+		{% if ingredients %}
+		Search: <input type="text" id="search_ingredient" />
+	</div>
+</div>
+
+{% if select %}
+<form action="{% url 'recipe_manager:add ingredient to recipe' %}" method="post">
+	{% csrf_token %}
+	<input type="hidden" name="ingredient" />
+	<input type="hidden" name="quantity" />
+	{{form_ingredient.ingredient}} {{form_ingredient.quantity}} <span id="unit">grams</span> <button type="submit" class="btn btn-primary">Add</button>
+</form>
+{% endif %}
+
+<div class="row">
+	<div class="col-8 ingredients">
+		{% for ingredient in ingredients %}
+		<div class="card {% if select %}selectable{% endif %}" style="width: 180px;">
+			<!--img src="..." class="card-img-top" /-->
+			<div class="card-body">
+				<p class="card-text">
+					<span class="name">{{ingredient.name}}</span>
+					{% if edit %}
+					<a href="{% url 'recipe_manager:edit ingredient' ingredient_id=ingredient.id %}"><i class="bi bi-pencil"></i></a> 						
+					{% endif %}
+					<br>
+					<span class="article">{{ingredient.article}}</span>
+					<div class="quantity">
+						{{ingredient.quantityUnit.description}}
+						<input type="text" />
+					</div>
+				</p>
+			</div>
+		</div>
+		{% endfor %}
+		{% else %}
+		No ingredients created yet.
+		{% endif %}
+	</div>
+</div>
+
+<script>
+	// ingredient search
+	$('input#search_ingredient').keyup((e) => {
+		$('.ingredients .card').show()
+		
+		let search_text = $('input#search_ingredient').val().toLowerCase()
+		
+		$('.ingredients .card').each((index, card) => {
+			let name_article = $(card).text().replace(/\s+/g, " ").toLowerCase()
+			
+			if(!name_article.includes(search_text)) {
+				$(card).hide()
+			}
+		})
+	})
+
+	// ingredient selection
+	$('.card.selectable').click((e) => {
+		console.log($(this).text())
+	})
+</script>

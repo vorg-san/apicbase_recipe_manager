@@ -38,21 +38,6 @@
 	</div>
 </div>
 
-<div class="row">
-	{% if ingredients %}
-		{% for ingredient in ingredients %}
-			<div class="card" style="width: 10rem;">
-				<!--img src="..." class="card-img-top" /-->
-				<div class="card-body">
-					<p class="card-text">
-						{{ingredient.name}}
-						<a href="{% url 'recipe_manager:edit ingredient' ingredient_id=ingredient.id %}"><i class="bi bi-pencil"></i></a> 						
-					</p>
-				</div>
-			</div>
-		{% endfor %}
-	{% else %}
-		No ingredients created yet.
-	{% endif %}
-</div>
+{% include "recipe_manager/ingredient_list.html" with edit=True %}
+
 {% endblock %}

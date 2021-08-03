@@ -74,10 +74,22 @@ def get_recipe_and_price_lists(recipe_id):
 
 	return [recipe_list, price_list]
 
+def add_ingredient_to_recipe(recipe, ingredient, quantity):
+	recipe_list_new = models.RecipeList()
+	recipe_list_new.recipe = recipe
+	recipe_list_new.quantity = quantity 
+	recipe_list_new.ingredient = get_object_or_404(models.Ingredient, pk=ingredient.id)
+	recipe_list_new.save()
+	recipe.ingredients.add(ingredient)
+
+def add_recipe_ingredient(request):
+	pass
+
 def edit_recipe(request, recipe_id):
 	recipe = models.Recipe()
 	recipe_list = models.RecipeList()
 	initial_name_form = {}
+	price_list = {}
 
 	if recipe_id > 0:
 		recipe = get_object_or_404(models.Recipe, pk=recipe_id)
@@ -85,8 +97,7 @@ def edit_recipe(request, recipe_id):
 			'name': recipe.name,
 		}
 		recipe_list, price_list = get_recipe_and_price_lists(recipe_id)
-		
-		
+				
 	if request.method == 'POST':
 		if request.POST['objective'] == 'saveName':
 			form_ingredient = forms.RecipeIngredientForm()
@@ -102,15 +113,10 @@ def edit_recipe(request, recipe_id):
 			form_ingredient = forms.RecipeIngredientForm(request.POST)
 	
 			if form_ingredient.is_valid():
-				ingredient_id = form_ingredient.cleaned_data['ingredient'].id
+				ingredient_from_form = form_ingredient.cleaned_data['ingredient']
 
-				if not recipe_list.filter(ingredient=ingredient_id): # can't add if ingredient is already in the recipe
-					recipe_list_new = models.RecipeList()
-					recipe_list_new.recipe = recipe
-					recipe_list_new.quantity = form_ingredient.cleaned_data['quantity']
-					recipe_list_new.ingredient = get_object_or_404(models.Ingredient, pk=ingredient_id)
-					recipe_list_new.save()
-					recipe.ingredients.add(form_ingredient.cleaned_data['ingredient'])
+				if not recipe_list.filter(ingredient=ingredient_from_form.id): # can't add if ingredient is already in the recipe
+					add_ingredient_to_recipe(recipe, ingredient_from_form, form_ingredient.cleaned_data['quantity'])
 					recipe_list, price_list = get_recipe_and_price_lists(recipe_id)
 	else:
 		form_name = forms.RecipeNameForm(initial=initial_name_form)
@@ -121,7 +127,8 @@ def edit_recipe(request, recipe_id):
 		'form_ingredient': form_ingredient,
 		'recipe': recipe,
 		'recipe_list': recipe_list,
-		'price_list': price_list
+		'price_list': price_list,
+		'ingredients': models.Ingredient.objects.all(),
 	}
 
 	return render(request, 'recipe_manager/edit_recipe.html', context)
@@ -136,10 +143,7 @@ def get_item(dictionary, key):
 
 @register.filter
 def sum_dict_items(dictionary):
-	total = 0
-	for key, value in dictionary.items():
-		total += dictionary.get(key)
-	return total
+	return sum([dictionary.get(key) for key, _ in dictionary.items()])
 
 # Below would be used only for integration with a pure js framework like React
 
