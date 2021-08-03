@@ -98,7 +98,7 @@ def add_recipe_ingredient(request):
 
 def edit_recipe(request, recipe_id):
 	recipe = models.Recipe()
-	recipe_list = models.RecipeList()
+	recipe_list = []
 	initial_name_form = {}
 	price_list = {}
 	form_ingredient = forms.RecipeIngredientForm(initial={'recipe_id': recipe.id})
