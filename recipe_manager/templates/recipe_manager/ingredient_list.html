@@ -5,19 +5,10 @@
 	</div>
 </div>
 
-{% if select %}
-<form action="{% url 'recipe_manager:add ingredient to recipe' %}" method="post">
-	{% csrf_token %}
-	<input type="hidden" name="ingredient" />
-	<input type="hidden" name="quantity" />
-	{{form_ingredient.ingredient}} {{form_ingredient.quantity}} <span id="unit">grams</span> <button type="submit" class="btn btn-primary">Add</button>
-</form>
-{% endif %}
-
 <div class="row">
 	<div class="col-8 ingredients">
 		{% for ingredient in ingredients %}
-		<div class="card {% if select %}selectable{% endif %}" style="width: 180px;">
+		<div class="card {% if ingredients_in_recipe|contains:ingredient.id %}used{% else %}{% if select %}selectable{% endif %}{% endif %}" style="width: 180px;">
 			<!--img src="..." class="card-img-top" /-->
 			<div class="card-body">
 				<p class="card-text">
@@ -27,10 +18,18 @@
 					{% endif %}
 					<br>
 					<span class="article">{{ingredient.article}}</span>
+					{% if select %}
 					<div class="quantity">
-						{{ingredient.quantityUnit.description}}
-						<input type="text" />
+						<form action="{% url 'recipe_manager:add ingredient to recipe' %}" method="post">
+							{% csrf_token %}
+							<input type="hidden" name="ingredient_id" value="{{ingredient.id}}" />
+							<input type="hidden" name="recipe_id" value="{{recipe.id}}" />
+							{{form_ingredient.quantity}}
+							{{ingredient.quantityUnit.description}}
+							<button class="btn btn-primary" disabled="true" type="submit">Add</button>
+						</form>
 					</div>
+					{% endif %}
 				</p>
 			</div>
 		</div>
@@ -43,7 +42,7 @@
 
 <script>
 	// ingredient search
-	$('input#search_ingredient').keyup((e) => {
+	$('input#search_ingredient').keyup(function(e) {
 		$('.ingredients .card').show()
 		
 		let search_text = $('input#search_ingredient').val().toLowerCase()
@@ -58,7 +57,19 @@
 	})
 
 	// ingredient selection
-	$('.card.selectable').click((e) => {
-		console.log($(this).text())
+	$('.card.selectable').click(function(e) {
+		$('.card.selectable').find('.quantity').hide()
+		$(this).find('.quantity').show()
+	})
+
+	function toggleDisabledButton(button, condition) {
+		button.prop('disabled', condition)
+	}
+
+	$('.quantity input').keyup(function(e) {
+		toggleDisabledButton($(this).next(), !$(this).val())
+	})
+	$('.quantity input').change(function(e) {
+		toggleDisabledButton($(this).next(), !$(this).val())
 	})
 </script>

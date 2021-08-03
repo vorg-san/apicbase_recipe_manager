@@ -13,6 +13,7 @@ class RecipeNameForm(forms.Form):
 	name = forms.CharField(max_length=800)
 
 class RecipeIngredientForm(forms.Form):
-	quantity = forms.FloatField()
-	ingredient = forms.ModelChoiceField(queryset=models.Ingredient.objects.all())
+	quantity = forms.FloatField() 
+	recipe_id = forms.HiddenInput()
+	ingredient_id = forms.HiddenInput()
         

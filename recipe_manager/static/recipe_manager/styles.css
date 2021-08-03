@@ -1,0 +1,26 @@
+input[type="number"] {
+	width: 80px;
+}
+td,th {
+	text-align: center;
+}
+table {
+	border-spacing: 10px;
+	border-collapse: separate;
+}
+.ingredients {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	color: #222;
+}
+.quantity {
+	display: none;
+}
+.card.selectable:hover {
+	cursor: pointer;
+	border: 1px solid blue;
+}
+.used {
+	border: 1px solid red;
+}

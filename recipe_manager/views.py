@@ -74,22 +74,34 @@ def get_recipe_and_price_lists(recipe_id):
 
 	return [recipe_list, price_list]
 
-def add_ingredient_to_recipe(recipe, ingredient, quantity):
+def add_ingredient_to_recipe(recipe_id, ingredient_id, quantity):
 	recipe_list_new = models.RecipeList()
-	recipe_list_new.recipe = recipe
+	recipe_list_new.recipe = get_object_or_404(models.Recipe, pk=recipe_id)
 	recipe_list_new.quantity = quantity 
-	recipe_list_new.ingredient = get_object_or_404(models.Ingredient, pk=ingredient.id)
+	recipe_list_new.ingredient = get_object_or_404(models.Ingredient, pk=ingredient_id)
 	recipe_list_new.save()
-	recipe.ingredients.add(ingredient)
 
 def add_recipe_ingredient(request):
-	pass
+	if request.method == 'POST':
+		form_ingredient = forms.RecipeIngredientForm(request.POST)
+
+		if form_ingredient.is_valid():
+			recipe_id = request.POST.get('recipe_id', '')
+			ingredient_id = request.POST.get('ingredient_id', '')
+			quantity = form_ingredient.cleaned_data['quantity']
+			recipe_list, _ = get_recipe_and_price_lists(recipe_id)
+			
+			if not recipe_list.filter(ingredient=ingredient_id): # can't add if ingredient is already in the recipe
+				add_ingredient_to_recipe(recipe_id, ingredient_id, quantity)
+				
+		return HttpResponseRedirect(reverse(f'recipe_manager:edit recipe', kwargs={'recipe_id':recipe_id}))
 
 def edit_recipe(request, recipe_id):
 	recipe = models.Recipe()
 	recipe_list = models.RecipeList()
 	initial_name_form = {}
 	price_list = {}
+	form_ingredient = forms.RecipeIngredientForm(initial={'recipe_id': recipe.id})
 
 	if recipe_id > 0:
 		recipe = get_object_or_404(models.Recipe, pk=recipe_id)
@@ -97,30 +109,19 @@ def edit_recipe(request, recipe_id):
 			'name': recipe.name,
 		}
 		recipe_list, price_list = get_recipe_and_price_lists(recipe_id)
+		
+	ingredients_in_recipe = [rl.ingredient.id for rl in recipe_list]
 				
 	if request.method == 'POST':
-		if request.POST['objective'] == 'saveName':
-			form_ingredient = forms.RecipeIngredientForm()
-			form_name = forms.RecipeNameForm(request.POST)
-	
-			if form_name.is_valid():
-				recipe.name = form_name.cleaned_data['name']
-				recipe.save()			
-				
-				return HttpResponseRedirect(reverse(f'recipe_manager:edit recipe', kwargs={'recipe_id':recipe.id}))
-		else:
-			form_name = forms.RecipeNameForm(initial=initial_name_form)
-			form_ingredient = forms.RecipeIngredientForm(request.POST)
-	
-			if form_ingredient.is_valid():
-				ingredient_from_form = form_ingredient.cleaned_data['ingredient']
+		form_name = forms.RecipeNameForm(request.POST)
 
-				if not recipe_list.filter(ingredient=ingredient_from_form.id): # can't add if ingredient is already in the recipe
-					add_ingredient_to_recipe(recipe, ingredient_from_form, form_ingredient.cleaned_data['quantity'])
-					recipe_list, price_list = get_recipe_and_price_lists(recipe_id)
+		if form_name.is_valid():
+			recipe.name = form_name.cleaned_data['name']
+			recipe.save()			
+			
+			return HttpResponseRedirect(reverse(f'recipe_manager:edit recipe', kwargs={'recipe_id':recipe.id}))
 	else:
 		form_name = forms.RecipeNameForm(initial=initial_name_form)
-		form_ingredient = forms.RecipeIngredientForm()
 	
 	context = {
 		'form_name': form_name,
@@ -128,13 +129,13 @@ def edit_recipe(request, recipe_id):
 		'recipe': recipe,
 		'recipe_list': recipe_list,
 		'price_list': price_list,
+		'ingredients_in_recipe': ingredients_in_recipe,
 		'ingredients': models.Ingredient.objects.all(),
 	}
 
 	return render(request, 'recipe_manager/edit_recipe.html', context)
 
-# Filter
-
+# Filters
 from django.template.defaulttags import register
 
 @register.filter
@@ -145,8 +146,13 @@ def get_item(dictionary, key):
 def sum_dict_items(dictionary):
 	return sum([dictionary.get(key) for key, _ in dictionary.items()])
 
-# Below would be used only for integration with a pure js framework like React
+@register.filter
+def contains(list, element):
+	if not list:
+		return False
+	return element in list
 
+# Below would be used only for integration with a pure js framework like React
 def db_to_json(query):
 	data = serializers.serialize('json', query)
 	return HttpResponse(data, content_type='application/json')
