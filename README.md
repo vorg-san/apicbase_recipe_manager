@@ -42,5 +42,6 @@ Doing the extra mile, the application delivers:
 	- add your server ip to settings.py, for example: ALLOWED_HOSTS = ['44.196.172.48']
 5) run: pip install django-livereload-server
 6) run: python manage.py migrate
-7) run: python manage.py runserver 0.0.0.0:8000
+7) run: python manage.py loaddata initialdb
+8) run: python manage.py runserver 0.0.0.0:8000
 
