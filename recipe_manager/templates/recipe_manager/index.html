@@ -3,6 +3,8 @@
 {% block content %}
 <h3 align="center">Recipe Manager</h3>
 
+<br><br>
+
 <div class="row">
 	<div class="col-1 offset-1">
 		<h5>Recipes</h5>
@@ -11,6 +13,8 @@
 		<a class="btn btn-primary" href="{% url 'recipe_manager:edit recipe' recipe_id=0 %}">Add</a>
 	</div>
 </div>
+
+<br>
 
 <div class="row">
 	{% if recipes %}
@@ -29,6 +33,8 @@
 	{% endif %}
 </div>
 
+<br>
+
 <div class="row">
 	<div class="col-1 offset-1">
 		<h5>Ingredients</h5>
@@ -37,6 +43,8 @@
 		<a class="btn btn-primary" href="{% url 'recipe_manager:edit ingredient' ingredient_id=0 %}">Add</a>
 	</div>
 </div>
+
+<br>
 
 {% include "recipe_manager/ingredient_list.html" with edit=True %}
 
