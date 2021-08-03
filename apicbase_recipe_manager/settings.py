@@ -84,9 +84,9 @@ DATABASES = {
 					'charset': 'utf8mb4' 
 				},
         'NAME': 'recipe_manager',
-        'USER': 'root',
+        'USER': os.environ['MYSQL_USER'],
         'PASSWORD': os.environ['MYSQL_PASS'],
-        'HOST': '127.0.0.1',
+        'HOST': os.environ['MYSQL_HOST'],
     }
 }
 
