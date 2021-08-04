@@ -1,8 +1,10 @@
 # apicbase_recipe_manager
 
-1 week coding challenge from Apicbase, it is my first django app. The requirements were:
+1 week coding challenge from Apicbase, it is my first django app. 
 
-## Requirements
+![A print screen of the project running](print.png)
+
+## Requirements 
 
 Description
 
