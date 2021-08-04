@@ -24,7 +24,7 @@
 							{% csrf_token %}
 							<input type="hidden" name="ingredient_id" value="{{ingredient.id}}" />
 							<input type="hidden" name="recipe_id" value="{{recipe.id}}" />
-							{{form_ingredient.quantity}}
+							<input type="number" name="quantity" step="any" required />
 							{{ingredient.quantityUnit.description}}
 							<button class="btn btn-primary" disabled="true" type="submit">Add</button>
 						</form>
@@ -39,7 +39,7 @@
 		{% endif %}
 	</div>
 </div>
-
+ 
 <script>
 	// ingredient search
 	$('input#search_ingredient').keyup(function(e) {

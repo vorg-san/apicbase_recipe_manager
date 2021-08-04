@@ -16,7 +16,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
@@ -26,14 +25,15 @@ SECRET_KEY = os.environ['DJANGO_RECIPE_MANAGER_SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['44.196.172.48']
+LIVERELOAD = False
+
+ALLOWED_HOSTS = ['127.0.0.1', '44.196.172.48']
 
 
 # Application definition
 
 INSTALLED_APPS = [
 		'recipe_manager.apps.RecipeManagerConfig',
-		'livereload',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,9 +42,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
+if LIVERELOAD:
+	INSTALLED_APPS.append('livereload')
+
 MIDDLEWARE = [
-		'livereload.middleware.LiveReloadScript',
-    'django.middleware.security.SecurityMiddleware',
+		'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -52,6 +54,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+if LIVERELOAD:
+	MIDDLEWARE.append('livereload.middleware.LiveReloadScript')
 
 ROOT_URLCONF = 'apicbase_recipe_manager.urls'
 

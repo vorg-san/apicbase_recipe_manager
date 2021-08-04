@@ -51,20 +51,6 @@ def edit_ingredient(request, ingredient_id):
 
 	return render(request, 'recipe_manager/edit_ingredient.html', context)
 
-def remove_ingredient(request, ingredient_id):
-	ingredient = get_object_or_404(models.Ingredient, pk=ingredient_id)
-	ingredient.delete()
-	return HttpResponseRedirect(reverse('recipe_manager:home') )
-
-def remove_recipe(request, recipe_id):
-	recipe = get_object_or_404(models.Recipe, pk=recipe_id)
-	recipe.delete()
-	return HttpResponseRedirect(reverse('recipe_manager:home'))
-
-def remove_recipe_ingredient(request, recipe_id, ingredient_id):
-	models.RecipeList.objects.filter(recipe=recipe_id, ingredient=ingredient_id).delete()
-	return HttpResponseRedirect(reverse('recipe_manager:edit recipe', kwargs={'recipe_id':recipe_id}))
-
 def get_recipe_and_price_lists(recipe_id):
 	recipe_list = models.RecipeList.objects.filter(recipe=recipe_id)
 	price_list = {}
@@ -73,13 +59,6 @@ def get_recipe_and_price_lists(recipe_id):
 		price_list[ingredient_list.ingredient.id] = ingredient_list.quantity * ingredient_list.ingredient.currency / ingredient_list.ingredient.quantity
 
 	return [recipe_list, price_list]
-
-def add_ingredient_to_recipe(recipe_id, ingredient_id, quantity):
-	recipe_list_new = models.RecipeList()
-	recipe_list_new.recipe = get_object_or_404(models.Recipe, pk=recipe_id)
-	recipe_list_new.quantity = quantity 
-	recipe_list_new.ingredient = get_object_or_404(models.Ingredient, pk=ingredient_id)
-	recipe_list_new.save()
 
 def add_recipe_ingredient(request):
 	if request.method == 'POST':
@@ -92,7 +71,11 @@ def add_recipe_ingredient(request):
 			recipe_list, _ = get_recipe_and_price_lists(recipe_id)
 			
 			if not recipe_list.filter(ingredient=ingredient_id): # can't add if ingredient is already in the recipe
-				add_ingredient_to_recipe(recipe_id, ingredient_id, quantity)
+				recipe_list_new = models.RecipeList()
+				recipe_list_new.recipe = get_object_or_404(models.Recipe, pk=recipe_id)
+				recipe_list_new.quantity = quantity 
+				recipe_list_new.ingredient = get_object_or_404(models.Ingredient, pk=ingredient_id)
+				recipe_list_new.save()
 				
 		return HttpResponseRedirect(reverse(f'recipe_manager:edit recipe', kwargs={'recipe_id':recipe_id}))
 
@@ -135,6 +118,24 @@ def edit_recipe(request, recipe_id):
 
 	return render(request, 'recipe_manager/edit_recipe.html', context)
 
+
+# Remove endpoints
+def remove_ingredient(request, ingredient_id):
+	ingredient = get_object_or_404(models.Ingredient, pk=ingredient_id)
+	ingredient.delete()
+	return HttpResponseRedirect(reverse('recipe_manager:home') )
+
+def remove_recipe(request, recipe_id):
+	recipe = get_object_or_404(models.Recipe, pk=recipe_id)
+	recipe.delete()
+	return HttpResponseRedirect(reverse('recipe_manager:home'))
+
+def remove_recipe_ingredient(request, recipe_id, ingredient_id):
+	models.RecipeList.objects.filter(recipe=recipe_id, ingredient=ingredient_id).delete()
+	return HttpResponseRedirect(reverse('recipe_manager:edit recipe', kwargs={'recipe_id':recipe_id}))
+# Remove endpoints
+
+
 # Filters
 from django.template.defaulttags import register
 
@@ -151,6 +152,9 @@ def contains(list, element):
 	if not list:
 		return False
 	return element in list
+# Filters
+
+
 
 # Below would be used only for integration with a pure js framework like React
 def db_to_json(query):
