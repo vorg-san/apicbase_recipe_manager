@@ -29,9 +29,13 @@ def edit_ingredient(request, ingredient_id):
 		}
 
 	if request.method == 'POST':
-		form = forms.IngredientForm(request.POST)
+		form = forms.IngredientForm(request.POST, request.FILES)
 
 		if form.is_valid():
+			if form.cleaned_data['image']:
+				ingredient.image = models.Ingredient(image=form.cleaned_data['image']).image
+			if form.cleaned_data['remove_image']:
+				ingredient.image = None
 			ingredient.name = form.cleaned_data['name']
 			ingredient.article = form.cleaned_data['article']
 			ingredient.quantity = form.cleaned_data['quantity']

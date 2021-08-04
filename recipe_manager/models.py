@@ -22,6 +22,7 @@ class Ingredient(models.Model):
 	quantityUnit = models.ForeignKey(QuantityUnit, on_delete=models.CASCADE)
 	currency = models.FloatField()
 	currencyUnit = models.ForeignKey(CurrencyUnit, on_delete=models.CASCADE)
+	image = models.ImageField(upload_to='images', blank=True, null=True)
 	updated = models.DateTimeField(default=timezone.now, blank=True)
 
 	class Meta:

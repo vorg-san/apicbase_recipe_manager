@@ -32,7 +32,8 @@ Recipes
 Doing the extra mile, the application delivers:
  1) Delete ingredient
  2) Delete recipe
- 3) Fixture (preload database data from file)
+ 3) Image for ingredients
+ 4) Fixture (preload database data from file)
 
 ## Next possible improvements
 
@@ -50,6 +51,7 @@ Doing the extra mile, the application delivers:
 3) Clone repo
 4) cd into cloned repo folder
 	- add your server ip to settings.py, for example: ALLOWED_HOSTS = ['44.196.172.48']
+	- pip install Pillow
 5) run: python manage.py migrate
 6) run: python manage.py loaddata initialdb
 7) run: python manage.py runserver 0.0.0.0:8000

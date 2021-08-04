@@ -9,7 +9,9 @@
 	<div class="col-8 ingredients">
 		{% for ingredient in ingredients %}
 		<div class="card {% if ingredients_in_recipe|contains:ingredient.id %}used{% else %}{% if select %}selectable{% endif %}{% endif %}" style="width: 180px;">
-			<!--img src="..." class="card-img-top" /-->
+			{% if ingredient.image %}
+			<img src="{{ingredient.image.url}}" class="card-img-top" />
+			{% endif %}
 			<div class="card-body">
 				<p class="card-text">
 					<span class="name">{{ingredient.name}}</span>

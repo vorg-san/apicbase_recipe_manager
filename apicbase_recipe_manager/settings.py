@@ -29,6 +29,12 @@ LIVERELOAD = False
 
 ALLOWED_HOSTS = ['127.0.0.1', '44.196.172.48']
 
+# Base url to serve media files
+MEDIA_URL = '/media/'
+
+# Path where media is stored
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
 
 # Application definition
 

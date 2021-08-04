@@ -8,6 +8,8 @@ class IngredientForm(forms.Form):
 	quantityUnit = forms.ModelChoiceField(queryset=models.QuantityUnit.objects.all().order_by('num_order'))
 	currency = forms.FloatField()
 	currencyUnit = forms.ModelChoiceField(queryset=models.CurrencyUnit.objects.all().order_by('num_order'))
+	image = forms.ImageField(required=False)
+	remove_image = forms.BooleanField(required=False,label='Remove image')
 
 class RecipeNameForm(forms.Form):
 	name = forms.CharField(max_length=800)
